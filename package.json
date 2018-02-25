@@ -9,7 +9,10 @@
   "scripts": {
     "build": "npm run compile && npm test",
     "compile": "tsc",
-    "test": "protractor dist/test/protractor.conf.js"
+    "test": "protractor dist/test/protractor.conf.js",
+
+    "preversion": "npm build",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "request": "^2.83.0"
