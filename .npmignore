@@ -1,0 +1,6 @@
+dist\test
+lib
+test
+node_modules
+.vscode
+*.log

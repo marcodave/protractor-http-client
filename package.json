@@ -1,0 +1,24 @@
+{
+  "name": "protractor-http-client",
+  "version": "0.1.0",
+  "description": "HTTP client to be used in protractor tests",
+  "main": "dist/http-client.js",
+  "keywords": [
+    "protractor", "http", "rest", "client", "test", "selenium", "webdriver"
+  ],
+  "scripts": {
+    "compile": "tsc",
+    "test": "protractor dist/protractor.conf.js"
+  },
+  "dependencies": {
+    "request": "^2.83.0"
+  },
+  "devDependencies": {
+    "protractor": "^4",
+    "@types/request": "2.47.0",
+    "typescript": "^2.7"
+  },
+
+  "author": "Marco Dalla Vecchia <mdallav@gmail.com>",
+  "license": "MIT"
+}
