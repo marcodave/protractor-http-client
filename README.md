@@ -87,12 +87,12 @@ describe("the login page", () => {
         const postResponse = http.post("/users", {
             username: "marco", password: "bigsecret"
         });
-        expect(postResponse).toEqual(200)
+        expect(postResponse.statusCode).toEqual(200)
     })
     afterEach(() => {
         // delete user
         const deleteResponse = http.delete("/users/marco");
-        expect(deleteResponse).toEqual(200)
+        expect(deleteResponse.statusCode).toEqual(200)
     })
 
     it("will allow login with new user", () => {
