@@ -2,12 +2,14 @@
 HTTP Client library to use in protractor tests
 
 # What this library is about
-Are you using protractor ? me too, and it's awesome! This library is a little utility
-that allows you to make any HTTP call (GET, PUT, POST, ...) , leveraging the powerful request library.
+Are you using [protractor](https://www.npmjs.com/package/protractor) ? me too, and it's awesome! This library is a little utility
+that allows you to make any HTTP call (GET, PUT, POST, ...) , leveraging the powerful [request](https://www.npmjs.com/package/request) library.
+
 This library allows you to call HTTP services before, after or during interactions within the browser.
 
 ## Why is it useful?
 for example, for setting up test data via REST API before a test is run, or cleaning up after a test has finished running.
+
 It won't be easy to do the same with plain 'http' or 'request' module, as you will have to wait for the HTTP
 call promise to complete, before using the protractor browser calls.
 
@@ -58,7 +60,7 @@ You have `get`, `post`, `put`, `delete` methods available.
 For more complex requests, use the `request` method shown below.
 
 ## Passing complex request options
-You can pass any options accepted by the request library, by passing an object to the request method
+You can pass [any options accepted by the request library](https://www.npmjs.com/package/request#requestoptions-callback), by passing an object to the request method
 ```javascript
 let options = { .... }
 http.request(options)
