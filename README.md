@@ -8,11 +8,16 @@ This library allows you to call HTTP services before, after or during interactio
 
 ## Why is it useful?
 for example, for setting up test data via REST API before a test is run, or cleaning up after a test has finished running.
-It's much better than using plain HTTP calls with Node, as you have to just call e.g.
+It won't be easy to do the same with plain 'http' or 'request' module, as you will have to wait for the HTTP
+call promise to complete, before using the protractor browser calls.
+
+Instead, you have to just call e.g.
 ```javascript
 http.post("/database/users", {
     username: "marco", password: "bigsecret"
 })
+browser.get("/login") // this will wait for the previous call to finish
+// initiate login with "marco" user
 ```
 and the subsequent calls to protractor API will wait until the previous call finishes.
 
@@ -21,28 +26,34 @@ and the subsequent calls to protractor API will wait until the previous call fin
 * Node 4.2+
 
 # Usage
-Within a protractor test.js spec file, write
+If using Javascript specs
 ```javascript
 const HttpClient = require("protractor-http-client").HttpClient
+```
+If using Typescript specs
+```typescript
+import {HttpClient} from "protractor-http-client"
+```
 
+```typescript
 const http = new HttpClient("https://example.com/")
 
 // HTTP GET
-const userGetResponse = http.get("/users/marco");
-// HTTP POST, with JSON body
-// create a user
-const userGetResponse = http.post("/users", {
+const userGetResponse:ResponsePromise = http.get("/users/marco");
+// HTTP POST with JSON, automatically sets Content-Type: application/json
+http.post("/users", {
     username: "marco", password: "bigsecret"
-});
-
-// now you can use the browser to login with the new user
-browser.get("/login");
-element(by.id("username")).sendKeys("marco")
-element(by.id("password")).sendKeys("bigsecret")
-element(by.id("login-button")).click()
+}));
+// HTTP POST, with form data and custom content type
+http.post("/form", "param1=value1&param2=value2", {
+    "Content-Type": "application/x-www-form-urlencoded"
+}));
+// make HTTP calls fail and throw an exception when response code is not 2xx
+// default behavior is to continue on any HTTP status code
+http.failOnError = true
 ```
 
-You have `get`, `post`, `put`, `delete` available.
+You have `get`, `post`, `put`, `delete` methods available.
 `get` and `delete` methods do NOT accept request body.
 For more complex requests, use the `request` method shown below.
 
@@ -51,4 +62,46 @@ You can pass any options accepted by the request library, by passing an object t
 ```javascript
 let options = { .... }
 http.request(options)
+```
+
+## Helper methods on response to check status and body
+```typescript
+let response:ResponsePromise = http.get("/users/marco")
+let jsonResponse:JsonPromise = response.jsonBody
+let stringBody:Promise<string> = response.stringBody
+let rawBody:Promise<Buffer> = response.body
+
+let jsonPropertyValue:JsonPromise = response.jsonBody.get("propertyName")
+
+expect(response.statusCode).toEqual(200)
+expect(response.header("Content-Type")).toEqual("application/json")
+expect(response.stringBody).toEqual('{"username":"marco","password":"bigsecret"}')
+expect(response.jsonBody.get("username")).toEqual("marco")
+```
+
+## Example spec with API setup
+```javascript
+describe("the login page", () => {
+    beforeEach(() => {
+        // create a user
+        const postResponse = http.post("/users", {
+            username: "marco", password: "bigsecret"
+        });
+        expect(postResponse).toEqual(200)
+    })
+    afterEach(() => {
+        // delete user
+        const deleteResponse = http.delete("/users/marco");
+        expect(deleteResponse).toEqual(200)
+    })
+
+    it("will allow login with new user", () => {
+        // now you can use the browser to login with the new user
+        browser.get("/login");
+        element(by.id("username")).sendKeys("marco")
+        element(by.id("password")).sendKeys("bigsecret")
+        element(by.id("login-button")).click()
+        // expectations here
+    })
+})
 ```

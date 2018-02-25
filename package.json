@@ -2,10 +2,10 @@
   "name": "protractor-http-client",
   "version": "0.1.0",
   "description": "HTTP client to be used in protractor tests",
-  "main": "dist/http-client.js",
   "keywords": [
     "protractor", "http", "rest", "client", "test", "selenium", "webdriver"
   ],
+  "homepage": "https://github.com/marcodave/protractor-http-client",
   "scripts": {
     "build": "npm run compile && npm test",
     "compile": "tsc",
@@ -21,5 +21,10 @@
   },
 
   "author": "Marco Dalla Vecchia <mdallav@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marcodave/protractor-http-client.git"
+  },
+  "main": "dist/lib/http-client.js"
 }
