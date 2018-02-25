@@ -7,8 +7,9 @@
     "protractor", "http", "rest", "client", "test", "selenium", "webdriver"
   ],
   "scripts": {
+    "build": "npm run compile && npm test",
     "compile": "tsc",
-    "test": "protractor dist/protractor.conf.js"
+    "test": "protractor dist/test/protractor.conf.js"
   },
   "dependencies": {
     "request": "^2.83.0"
