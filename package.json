@@ -13,11 +13,12 @@
   ],
   "homepage": "https://github.com/marcodave/protractor-http-client",
   "scripts": {
+    "postinstall": "webdriver-manager update",
     "build": "npm test",
     "compile": "tsc",
     "pretest": "tsc",
     "test": "protractor dist/test/protractor.conf.js",
-    "preversion": "npm build",
+    "preversion": "npm test",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
