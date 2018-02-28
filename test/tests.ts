@@ -31,6 +31,29 @@ describe("Webdriver HTTP client", () => {
         expect(response.jsonBody.get("json").get("my").get("nice").get(0)).toEqual("json");
     });
 
+    
+    it("can perform a PUT", () => {
+        const http:HttpClient = new HttpClient("https://httpbin.org");
+
+        let response = http.put("/put", "param1=value1&param2=value2", {
+            "Content-Type": "application/x-www-form-urlencoded"
+        });
+        expect(response.statusCode).toBe(200);
+        expect(response.header("Content-Type")).toEqual("application/json");
+        expect(response.jsonBody.get("form").get("param1")).toEqual("value1");
+        expect(response.jsonBody.get("form").get("param2")).toEqual("value2");
+    });
+    
+    it("can perform a DELETE", () => {
+        const http:HttpClient = new HttpClient("https://httpbin.org");
+
+        let response = http.delete("/delete", {
+            "X-Custom": "value"
+        });
+        expect(response.statusCode).toBe(200);
+        expect(response.jsonBody.get("headers").get("X-Custom")).toEqual("value");
+    });
+    
     it("can fail when gets a non 2xx status code", () => {
         const http:HttpClient = new HttpClient("https://httpbin.org");
         let response = http.get("/status/404");

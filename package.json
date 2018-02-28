@@ -3,14 +3,19 @@
   "version": "0.1.0",
   "description": "HTTP client to be used in protractor tests",
   "keywords": [
-    "protractor", "http", "rest", "client", "test", "selenium", "webdriver"
+    "protractor",
+    "http",
+    "rest",
+    "client",
+    "test",
+    "selenium",
+    "webdriver"
   ],
   "homepage": "https://github.com/marcodave/protractor-http-client",
   "scripts": {
     "build": "npm run compile && npm test",
     "compile": "tsc",
     "test": "protractor dist/test/protractor.conf.js",
-
     "preversion": "npm build",
     "postversion": "git push && git push --tags"
   },
@@ -18,11 +23,11 @@
     "request": "^2.83.0"
   },
   "devDependencies": {
-    "protractor": "^4",
     "@types/request": "2.47.0",
+    "phantomjs-prebuilt": "^2.1.16",
+    "protractor": "^4",
     "typescript": "^2.7"
   },
-
   "author": "Marco Dalla Vecchia <mdallav@gmail.com>",
   "license": "MIT",
   "repository": {

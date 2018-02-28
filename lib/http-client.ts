@@ -31,7 +31,7 @@ export class HttpClient {
             if (error) {
                 deferred.reject(error);
             } else if (failOnError && !(response.statusCode >= 200 && response.statusCode < 300)) {
-                deferred.reject("request returned status code of " + response.statusCode + " and body " + body);
+                deferred.reject("request returned status code of " + response.statusCode + " and body " + util.inspect(body));
             } else {
                 deferred.fulfill(response);
             }
@@ -42,7 +42,23 @@ export class HttpClient {
         }));
     }
 
-    private send(method: string, url: string, body?: any, headers?: any): ResponsePromise {
+    get(url:string, headers?: any): ResponsePromise {
+        return this.send('GET', url, null, headers);
+    }
+    
+    post(url:string, body?: any, headers?: any): ResponsePromise {
+        return this.send('POST', url, body, headers);
+    }
+    
+    put(url:string, body?: any, headers?: any): ResponsePromise {
+        return this.send('PUT', url, body, headers);
+    }
+    
+    delete(url:string, headers?: any): ResponsePromise {
+        return this.send('DELETE', url, null, headers);
+    }
+
+    private send(method: string, url: string, body?: any, headers?: object): ResponsePromise {
         const options: request.Options = {
             baseUrl: this.baseUrl,
             url: url,
@@ -57,21 +73,5 @@ export class HttpClient {
             options.json = body;
         }
         return this.request(options);
-    }
-
-    get(url:string, headers?: any): ResponsePromise {
-        return this.send('GET', url, null, headers);
-    }
-
-    post(url:string, body?: any, headers?: any): ResponsePromise {
-        return this.send('POST', url, body, headers);
-    }
-    
-    put(url:string, body?: any, headers?: any): ResponsePromise {
-        return this.send('PUT', url, body, headers);
-    }
-    
-    delete(url:string, headers?: any): ResponsePromise {
-        return this.send('DELETE', url, null, headers);
     }
 }
