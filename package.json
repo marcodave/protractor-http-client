@@ -19,7 +19,8 @@
     "pretest": "tsc",
     "test": "protractor dist/test/protractor.conf.js",
     "preversion": "npm test",
-    "postversion": "git push && git push --tags"
+    "prepublish": "npm version patch",
+    "postpublish": "npm version prerelease && git push --all"
   },
   "dependencies": {
     "request": "^2.83.0"
