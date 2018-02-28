@@ -31,7 +31,17 @@ export class HttpClient {
             if (error) {
                 deferred.reject(error);
             } else if (failOnError && !(response.statusCode >= 200 && response.statusCode < 300)) {
-                deferred.reject("request returned status code of " + response.statusCode + " and body " + util.inspect(body));
+                body = body || "";
+                if (body.toString() === '[object Object]') {
+                    body = JSON.stringify(body);
+                } else if (Buffer.isBuffer(body)) {
+                    if (body.indexOf(0) >= 0) {
+                        body = "<" + response.headers["content-type"] + ", length=" + body.length + ">";
+                    } else {
+                        body = body.toString();
+                    }
+                }
+                deferred.reject("request returned status code of " + response.statusCode + " and body " + body);
             } else {
                 deferred.fulfill(response);
             }

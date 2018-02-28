@@ -66,6 +66,9 @@ describe("Webdriver HTTP client", () => {
         http.get("/status/500").catch((error) => {
             expect(error).toBe("request returned status code of 500 and body ");
         });
+        http.get("/unknown").catch((error) => {
+            expect(error).toContain("request returned status code of 404 and body <!DOCTYPE HTML");
+        });
         expect(http.get("/status/201").statusCode).toBe(201);
         expect(http.get("/status/299").statusCode).toBe(299);
     });
