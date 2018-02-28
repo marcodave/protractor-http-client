@@ -18,7 +18,8 @@
     "compile": "tsc",
     "pretest": "tsc",
     "test": "protractor dist/test/protractor.conf.js",
-    "prepublish": "npm test && npm version patch",
+    "release": "npm version patch && npm publish",
+    "prepublish": "npm test",
     "postpublish": "npm version prerelease && git push --all"
   },
   "dependencies": {
