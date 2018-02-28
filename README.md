@@ -1,6 +1,8 @@
 # protractor-http-client
 HTTP Client library to use in protractor tests
 
+[![Build Status](https://api.travis-ci.org/marcodave/protractor-http-client.svg?branch=master)](https://travis-ci.org/marcodave/protractor-http-client)
+
 # What this library is about
 Are you using [protractor](https://www.npmjs.com/package/protractor) ? me too, and it's awesome! This library is a little utility
 that allows you to make any HTTP call (GET, PUT, POST, ...) , leveraging the powerful [request](https://www.npmjs.com/package/request) library.
