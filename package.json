@@ -16,8 +16,7 @@
     "compile": "tsc",
     "pretest": "tsc",
     "test": "webdriver-manager update && protractor dist/test/protractor.conf.js",
-    "prepublish": "npm test",
-    "postpublish": "npm version patch && git push && git push --tags"
+    "prepublish": "npm test"
   },
   "dependencies": {
     "request": "^2.83.0"
