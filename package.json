@@ -13,7 +13,6 @@
   ],
   "homepage": "https://github.com/marcodave/protractor-http-client",
   "scripts": {
-    "build": "npm test",
     "compile": "tsc",
     "pretest": "tsc",
     "test": "webdriver-manager update && protractor dist/test/protractor.conf.js",
