@@ -1,4 +1,4 @@
-import {HttpClient} from "../lib/http-client";
+import {HttpClient} from "../http-client";
 import { protractor, browser } from "protractor";
 
 describe("Webdriver HTTP client", () => {

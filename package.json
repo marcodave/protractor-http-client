@@ -36,5 +36,5 @@
     "type": "git",
     "url": "https://github.com/marcodave/protractor-http-client.git"
   },
-  "main": "dist/lib/http-client.js"
+  "main": "dist/http-client.js"
 }
