@@ -15,8 +15,7 @@
   "scripts": {
     "compile": "tsc",
     "pretest": "tsc",
-    "test": "webdriver-manager update && protractor dist/test/protractor.conf.js",
-    "prepublish": "npm test"
+    "test": "webdriver-manager update && protractor dist/test/protractor.conf.js"
   },
   "dependencies": {
     "request": "^2.83.0"

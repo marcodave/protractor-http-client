@@ -1,12 +1,12 @@
-import * as http from 'http';
-import * as util from 'util';
+import http = require('http');
+import util = require('util');
 import request = require('request');
-import {protractor, promise} from 'protractor';
+import protractor = require('protractor');
 import {ResponsePromise} from "./promisewrappers";
-import Deferred = promise.Deferred;
-import Promise = promise.Promise;
+import Deferred = protractor.promise.Deferred;
+import Promise = protractor.promise.Promise;
 
-const controlFlow: promise.ControlFlow = protractor.promise.controlFlow();
+const controlFlow: protractor.promise.ControlFlow = protractor.promise.controlFlow();
 
 export class HttpClient {
     private baseUrl?: string;
@@ -25,7 +25,7 @@ export class HttpClient {
     }
 
     request(options: request.Options): ResponsePromise {
-        const deferred: Deferred<request.Response> = promise.defer<request.Response>();
+        const deferred: Deferred<request.Response> = protractor.promise.defer<request.Response>();
         const failOnError = this._failOnHttpError;
         const callback: request.RequestCallback = (error: any, response: request.Response, body: any) => {
             if (error) {
