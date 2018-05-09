@@ -8,21 +8,13 @@ import Promise = protractor.promise.Promise;
 
 const controlFlow:protractor.promise.ControlFlow = protractor.promise.controlFlow();
 
-export interface IendPointTemplate {
-    [key:string]:{
-        "path":string,
-        "method":string,
-        "headers"?:any,
-    }
-}
-
 interface AuthOptions {
     user?:string;
     username?:string;
     pass?:string;
     password?:string;
     sendImmediately?:boolean;
-    bearer?:string | (() => string);
+    authToken?:string
 }
 
 enum AUTH_TYPES {
@@ -36,8 +28,6 @@ export class HttpClient {
     private _failOnHttpError:boolean = false;
     private authenticationMechanism:AUTH_TYPES = AUTH_TYPES.NO_AUTH;
     private authObject:AuthOptions = {};
-    private authToken:string = "";
-    [key:string]:any; //index signature for accessing dynamically generated methods from test.
 
     constructor(baseUrl?: string) {
         this.baseUrl = baseUrl || "";
@@ -53,17 +43,26 @@ export class HttpClient {
 
     withBasicAuth(userName:string, password:string) {
         this.authenticationMechanism = AUTH_TYPES.BASIC_AUTH;
+        this.resetAuthOptions();
         this.authObject.username = userName;
         this.authObject.password = password;
     }
 
     withBearerToken(token:string) {
         this.authenticationMechanism = AUTH_TYPES.TOKEN_AUTH;
-        this.authToken = token;
+        this.resetAuthOptions();
+        this.authObject.authToken = token;
     }
 
     withNoAuth() {
         this.authenticationMechanism = AUTH_TYPES.NO_AUTH;
+        this.resetAuthOptions();
+    }
+
+    private resetAuthOptions() {
+        this.authObject.username = "";
+        this.authObject.password = "";
+        this.authObject.authToken = "";
     }
 
     request(options: request.Options): ResponsePromise {
@@ -114,93 +113,7 @@ export class HttpClient {
         return this.send('DELETE', url, null, headers);
     }
 
-    /**
-     * 
-     * Method used to generate predefined reusable methods for given set of endpoints.
-     * 
-     * Example:
-     * 
-     * let endpoints =  { 
-     *      getPosts : {
-     *          path : "/posts",
-     *          "methods" : "GET"
-     *      }
-     *  }
-     * 
-     * Below method will create a dynamic function in HttpClient prototype with name "getPosts" 
-     * and the method can be directly called from test like `http.getPosts()`.
-     * 
-     * @param endpoints
-     * @returns {HttpClient}
-     */
-    
-    registerEndpoints(endpoints:IendPointTemplate):HttpClient {
-        let self:HttpClient = this;
-        Object.keys(endpoints).forEach(function (endPointName:string) {
-            var endPointDetails = endpoints[endPointName];
-            HttpClient.prototype[endPointName] = function (parameters?:any, body?:any, headers?:any):ResponsePromise {
-                //parse wildcard routes before making API call.
-                let parsedUrl = HttpClient.parseWildCardRoutes(endPointDetails.path, parameters || {});
-                return self.send(endPointDetails.method, parsedUrl, body, endPointDetails.headers || headers);
-            }
-        });
-        return this;
-    }
-
-    /**
-     * 
-     * Method to convert wildcard routes with their respective values.
-     * 
-     * Example 1:
-     * let path = "/products/{productId}";
-     * let wildcardParam = { productId : 1 };
-     * 
-     * OUTPUT: "/products/1"
-     * 
-     * Example 2:
-     * 
-     * If the path doesn't have any wildcard pattern, then this method will append parameter as url-encoded-form.
-     * 
-     * let path = "/products";
-     * let wildcardParam = { productId : 1 };
-     * 
-     * OUTPUT: "/products?productId=1"
-     * 
-     * @param path
-     * @param wildcardParam
-     * @returns {string}
-     */
-    private static parseWildCardRoutes(path:string, wildcardParam:any):string {
-        var regexObject,isFirstUrlParam = true;
-        for (var param in wildcardParam) {
-            if (wildcardParam.hasOwnProperty(param) && path.indexOf("{" + param + "}") >= 0) {
-                regexObject = new RegExp("{" + param + "}", "g");
-                path = path.replace(regexObject, HttpClient.convertParamsToStringObject(wildcardParam[param]));
-            } else {
-                if(isFirstUrlParam) {
-                    path += "?";
-                    isFirstUrlParam = false;
-                } 
-                // Check if end of url contains &.
-                path += (path.substr(path.length - 1) == "&" || path.substr(path.length - 1) == "?") ?
-                param + "=" + HttpClient.convertParamsToStringObject(wildcardParam[param]) :
-                "&" + param + "=" + HttpClient.convertParamsToStringObject(wildcardParam[param]);
-            }
-        }
-        return path;
-    }
-
-    /**
-     * Method to convert JSON parameter Object into string.
-     * 
-     * @param param
-     * @returns {string}
-     */
-    private static convertParamsToStringObject(param?:any):any {
-        return Array.isArray(param) ? JSON.stringify(param) : param;
-    }
-
-    private send(method: string, url: string, body?: any, headers?: object): ResponsePromise {
+    public send(method: string, url: string, body?: any, headers?: object): ResponsePromise {
         const options: request.Options = {
             baseUrl: this.baseUrl,
             url: url,
@@ -222,7 +135,7 @@ export class HttpClient {
             options.auth = this.authObject;
         } else if(this.authenticationMechanism == AUTH_TYPES.TOKEN_AUTH) {
             options.auth = {
-                bearer : this.authToken
+                bearer : this.authObject.authToken
             };
 
         }

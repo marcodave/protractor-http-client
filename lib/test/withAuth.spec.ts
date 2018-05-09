@@ -1,9 +1,11 @@
 import {HttpClient} from "../http-client";
+import {HttpEndpoints} from "../registerEndpoints";
 import {browser} from 'protractor';
 
 describe("Test registeredEndpoints with authentication", function () {
 
     let http:HttpClient,
+        registeredEndpoints:HttpEndpoints,
         endPoints = {
             getProducts: {
                 path: "/products2",
@@ -17,8 +19,8 @@ describe("Test registeredEndpoints with authentication", function () {
     let expectedResponse = browser.params.db.products2;
 
     beforeAll(function () {
-        http = new HttpClient("http://localhost:5000")
-            .registerEndpoints(endPoints);
+        http = new HttpClient("http://localhost:5000");
+        registeredEndpoints = new HttpEndpoints(http, endPoints);
     });
 
     let removeAuth = () => {
@@ -38,7 +40,7 @@ describe("Test registeredEndpoints with authentication", function () {
         it("with no auth", function () {
 
             removeAuth();
-            let actualResponse = http.getProducts();
+            let actualResponse = registeredEndpoints.getProducts();
 
             //should return 401 when authorization credentials are not provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -47,7 +49,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with invalid username and password", function () {
             addBasicAuth("invalid_user", "invalid_password");
-            let actualResponse = http.getProducts();
+            let actualResponse = registeredEndpoints.getProducts();
 
             //should return 401 when invalid credentials are provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -56,7 +58,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with valid username and password", function () {
             addBasicAuth();
-            let actualResponse = http.getProducts();
+            let actualResponse = registeredEndpoints.getProducts();
             expect(actualResponse.statusCode).toEqual(200);
             expect(actualResponse.jsonBody.get("0")).toEqual(expectedResponse[0]);
             expect(actualResponse.jsonBody.deepGet("1.name")).toEqual(expectedResponse[1].name);
@@ -71,7 +73,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with invalid Token", function () {
             addTokenAuth("invalid token");
-            let actualResponse = http.getProducts();
+            let actualResponse = registeredEndpoints.getProducts();
 
             //should return 401 when invalid credentials are provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -80,7 +82,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with valid Token", function () {
             addTokenAuth();
-            let actualResponse = http.getProducts();
+            let actualResponse = registeredEndpoints.getProducts();
             expect(actualResponse.statusCode).toEqual(200);
             expect(actualResponse.jsonBody.get("0")).toEqual(expectedResponse[0]);
             expect(actualResponse.jsonBody.deepGet("1.name")).toEqual(expectedResponse[1].name);
@@ -107,12 +109,12 @@ describe("Test registeredEndpoints with authentication", function () {
                 "familyId": 1
             },
             actualResponse;
-        
-        
+
+
         it("with no auth", function () {
 
             removeAuth();
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEndpoints.createProduct(null, payload);
 
             //should return 401 when authorization credentials are not provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -121,7 +123,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with invalid username and password", function () {
             addBasicAuth("invalid_user", "invalid_password");
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEndpoints.createProduct(null, payload);
 
             //should return 401 when invalid credentials are provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -131,7 +133,7 @@ describe("Test registeredEndpoints with authentication", function () {
         it("with valid username and password", function () {
             addBasicAuth();
 
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEndpoints.createProduct(null, payload);
 
             expect(actualResponse.statusCode).toEqual(201);
             expect(actualResponse.jsonBody).toEqual(payload);
@@ -141,7 +143,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with invalid Token", function () {
             addTokenAuth("invalid token");
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEndpoints.createProduct(null, payload);
 
             //should return 401 when invalid credentials are provided.
             expect(actualResponse.statusCode).toEqual(401);
@@ -150,7 +152,7 @@ describe("Test registeredEndpoints with authentication", function () {
 
         it("with valid Token", function () {
             addTokenAuth();
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEndpoints.createProduct(null, payload);
             payload.id = payload.id + 1;
             expect(actualResponse.statusCode).toEqual(201);
             expect(actualResponse.jsonBody).toEqual(payload);

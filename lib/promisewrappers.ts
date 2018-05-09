@@ -123,8 +123,8 @@ export class JsonPromise {
     /**
      * utility method to get length of an array from response body.
      */
-    getArrayCount():JsonPromise {
-        return new JsonPromise(this.wrappedPromise.then((arr:any[]):number => arr.length));
+    getArrayCount():Promise<number> {
+        return this.wrappedPromise.then((arr:any[]):number => arr.length);
     }
 
     /**

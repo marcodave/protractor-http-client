@@ -1,7 +1,7 @@
 import {HttpClient} from "../http-client";
 import { protractor, browser } from "protractor";
 
-describe("Webdriver HTTP client", () => {
+xdescribe("Webdriver HTTP client", () => {
     
     it("can perform a GET", () => {
         const http:HttpClient = new HttpClient("https://httpbin.org");

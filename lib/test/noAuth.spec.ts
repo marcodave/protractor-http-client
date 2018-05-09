@@ -1,9 +1,11 @@
 import {HttpClient} from "../http-client";
+import {HttpEndpoints} from "../registerEndpoints";
 import {browser} from "protractor";
 
 describe("Test registeredEndpoints with no authentication", function () {
 
     let http:HttpClient,
+        registeredEnpoints:HttpEndpoints,
         endPoints = {
             getProducts: {
                 path: "/no-auth/products1",
@@ -31,14 +33,14 @@ describe("Test registeredEndpoints with no authentication", function () {
             }
         };
     let expectedResponse = browser.params.db.products1;
-    
+
     beforeAll(function () {
-        http = new HttpClient("http://localhost:5000")
-            .registerEndpoints(endPoints);
+        http = new HttpClient("http://localhost:5000");
+        registeredEnpoints = new HttpEndpoints(http, endPoints);
     });
 
     it("Test GET method", function () {
-        let actualResponse = http.getProducts();
+        let actualResponse = registeredEnpoints.getProducts();
 
         expect(actualResponse.statusCode).toEqual(200);
         expect(actualResponse.jsonBody.get("0")).toEqual(expectedResponse[0]);
@@ -56,7 +58,7 @@ describe("Test registeredEndpoints with no authentication", function () {
     });
 
     it("Test GET method with wildcard url", function () {
-        let actualResponse = http.getProductById({id: 2});
+        let actualResponse = registeredEnpoints.getProductById({id: 2});
 
         expect(actualResponse.jsonBody).toEqual(expectedResponse[1]);
     });
@@ -70,7 +72,7 @@ describe("Test registeredEndpoints with no authentication", function () {
                 "locationId": 1,
                 "familyId": 1
             },
-            actualResponse = http.createProduct(null, payload);
+            actualResponse = registeredEnpoints.createProduct(null, payload);
 
         expect(actualResponse.statusCode).toEqual(201);
         expect(actualResponse.jsonBody).toEqual(payload);
@@ -86,7 +88,7 @@ describe("Test registeredEndpoints with no authentication", function () {
                 "locationId": 1,
                 "familyId": 1
             },
-            actualResponse = http.createProduct(null, payload, {
+            actualResponse = registeredEnpoints.createProduct(null, payload, {
                 "Content-Type": "application/json"
             });
 
@@ -104,7 +106,7 @@ describe("Test registeredEndpoints with no authentication", function () {
                 "locationId": 12,
                 "familyId": 11
             },
-            actualResponse = http.updateProductUsingPut({id: 1}, payload);
+            actualResponse = registeredEnpoints.updateProductUsingPut({id: 1}, payload);
 
         expect(actualResponse.statusCode).toEqual(200);
         expect(actualResponse.jsonBody).toEqual(payload);
@@ -116,7 +118,7 @@ describe("Test registeredEndpoints with no authentication", function () {
                 "cost": 0,
                 "quantity": 0,
             },
-            actualResponse = http.updateProductUsingPatch({id: 2}, payload);
+            actualResponse = registeredEnpoints.updateProductUsingPatch({id: 2}, payload);
 
         expectedResponse[1].cost = payload.cost;
         expectedResponse[1].quantity = payload.quantity;
@@ -128,8 +130,8 @@ describe("Test registeredEndpoints with no authentication", function () {
 
     it("Test DELETE method", function () {
 
-        let deleteResponse = http.deleteProduct({id: 2});
-        let productList = http.getProducts();
+        let deleteResponse = registeredEnpoints.deleteProduct({id: 2});
+        let productList = registeredEnpoints.getProducts();
 
         expect(deleteResponse.statusCode).toEqual(200);
         expect(deleteResponse.jsonBody).toEqual({});
