@@ -1,6 +1,9 @@
 lib
 test
 node_modules
+server
+
 .vscode
 *.log
 .travis.yml
+gulpfile.js
