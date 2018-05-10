@@ -6,14 +6,31 @@ import {ResponsePromise} from "./promisewrappers";
 import Deferred = protractor.promise.Deferred;
 import Promise = protractor.promise.Promise;
 
-const controlFlow: protractor.promise.ControlFlow = protractor.promise.controlFlow();
+const controlFlow:protractor.promise.ControlFlow = protractor.promise.controlFlow();
+
+interface AuthOptions {
+    user?:string;
+    username?:string;
+    pass?:string;
+    password?:string;
+    sendImmediately?:boolean;
+    authToken?:string
+}
+
+enum AUTH_TYPES {
+    NO_AUTH = 0,
+    BASIC_AUTH = 1,
+    TOKEN_AUTH = 2,
+}
 
 export class HttpClient {
-    private baseUrl?: string;
-    private _failOnHttpError: boolean = false;
+    private baseUrl:string;
+    private _failOnHttpError:boolean = false;
+    private authenticationMechanism:AUTH_TYPES = AUTH_TYPES.NO_AUTH;
+    private authObject:AuthOptions = {};
 
     constructor(baseUrl?: string) {
-        this.baseUrl = baseUrl;
+        this.baseUrl = baseUrl || "";
     }
 
     set failOnHttpError(value: boolean) {
@@ -22,6 +39,30 @@ export class HttpClient {
 
     static set commonRequestOptions(commonOptions: request.CoreOptions) {
         request.defaults(commonOptions);
+    }
+
+    withBasicAuth(userName:string, password:string) {
+        this.authenticationMechanism = AUTH_TYPES.BASIC_AUTH;
+        this.resetAuthOptions();
+        this.authObject.username = userName;
+        this.authObject.password = password;
+    }
+
+    withBearerToken(token:string) {
+        this.authenticationMechanism = AUTH_TYPES.TOKEN_AUTH;
+        this.resetAuthOptions();
+        this.authObject.authToken = token;
+    }
+
+    withNoAuth() {
+        this.authenticationMechanism = AUTH_TYPES.NO_AUTH;
+        this.resetAuthOptions();
+    }
+
+    private resetAuthOptions() {
+        this.authObject.username = "";
+        this.authObject.password = "";
+        this.authObject.authToken = "";
     }
 
     request(options: request.Options): ResponsePromise {
@@ -59,7 +100,11 @@ export class HttpClient {
     post(url:string, body?: any, headers?: any): ResponsePromise {
         return this.send('POST', url, body, headers);
     }
-    
+
+    patch(url:string, body?: any, headers?: any): ResponsePromise {
+        return this.send('PATCH', url, body, headers);
+    }
+
     put(url:string, body?: any, headers?: any): ResponsePromise {
         return this.send('PUT', url, body, headers);
     }
@@ -68,7 +113,7 @@ export class HttpClient {
         return this.send('DELETE', url, null, headers);
     }
 
-    private send(method: string, url: string, body?: any, headers?: object): ResponsePromise {
+    public send(method: string, url: string, body?: any, headers?: object): ResponsePromise {
         const options: request.Options = {
             baseUrl: this.baseUrl,
             url: url,
@@ -76,12 +121,26 @@ export class HttpClient {
             headers: headers,
             jar: true,
             encoding: null
-        }
+        };
+
         if (util.isString(body)) {
             options.body = body;
         } else if (util.isObject(body)) {
             options.json = body;
         }
+        
+        //if any authentication mechanism is provided, then append respective auth object to headers.
+        
+        if (this.authenticationMechanism == AUTH_TYPES.BASIC_AUTH) {
+            options.auth = this.authObject;
+        } else if(this.authenticationMechanism == AUTH_TYPES.TOKEN_AUTH) {
+            options.auth = {
+                bearer : this.authObject.authToken
+            };
+
+        }
+
         return this.request(options);
     }
+
 }

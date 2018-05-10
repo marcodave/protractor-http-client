@@ -13,16 +13,22 @@
   ],
   "homepage": "https://github.com/marcodave/protractor-http-client",
   "scripts": {
-    "compile": "tsc",
-    "pretest": "tsc",
-    "test": "webdriver-manager update && protractor dist/test/protractor.conf.js"
+    "test": "webdriver-manager update --chrome=false --gecko=false && protractor dist/test/protractor.conf.js"
   },
   "dependencies": {
     "request": "^2.83.0"
   },
   "devDependencies": {
-    "@types/request": "2.47.0",
     "@types/jasminewd2": "2.x",
+    "@types/request": "2.47.0",
+    "basic-auth": "^2.0.0",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-sequence": "^1.0.0",
+    "gulp-typescript": "^4.0.2",
+    "json-server": "^0.12.2",
+    "jsonwebtoken": "^8.2.1",
     "phantomjs-prebuilt": "^2.1.16",
     "protractor": "^4",
     "typescript": "^2.7"
