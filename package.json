@@ -16,11 +16,11 @@
     "test": "webdriver-manager update --chrome=false --gecko=false && protractor dist/test/protractor.conf.js"
   },
   "dependencies": {
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "@types/request": "2.47.0"
   },
   "devDependencies": {
     "@types/jasminewd2": "2.x",
-    "@types/request": "2.47.0",
     "basic-auth": "^2.0.0",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
