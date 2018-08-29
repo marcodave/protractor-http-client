@@ -57,7 +57,7 @@ http.post("/form", "param1=value1&param2=value2", {
 http.failOnError = true
 ```
 
-You have `get`, `post`, `put`, `delete` methods available.
+You have `get`, `post`, `put`, `delete`, `patch` methods available.
 `get` and `delete` methods do NOT accept request body.
 For more complex requests, use the `request` method shown below.
 
@@ -66,6 +66,18 @@ You can pass [any options accepted by the request library](https://www.npmjs.com
 ```javascript
 let options = { .... }
 http.request(options)
+```
+
+## HTTP Authentication (from 1.0.5)
+Basic Auth
+```typescript
+let httpClient = new HttpClient(...)
+httpClient.withBasicAuth(username, password);
+```
+Bearer token Auth
+```typescript
+let httpClient = new HttpClient(...)
+httpClient.withBearerToken("token");
 ```
 
 ## Helper methods on response to check status and body
@@ -82,6 +94,42 @@ expect(response.header("Content-Type")).toEqual("application/json")
 expect(response.stringBody).toEqual('{"username":"marco","password":"bigsecret"}')
 expect(response.jsonBody.get("username")).toEqual("marco")
 ```
+
+## Registering REST endpoints for enhance test readability (from 1.0.5)
+Set up endpoints
+```typescript
+let httpClient:HttpClient = new HttpClient(...);
+let endpoints:HttpEndpoints = new HttpEndpoints(httpClient, {
+  getProducts: {
+    path: "/products",
+    method: "GET"
+  },
+  getProductById: {
+     path: "/products/{id}",
+     method: "GET"
+  }
+  createProduct: {
+    path: "/products",
+    method: "POST"
+  }
+});
+```
+in the test code
+```typescript
+let productPayload = {....}
+let customHeaders = {
+    "Content-Type": "application/json",
+    ...
+}
+endpoints.createProduct(null, productPayload, customHeaders);
+let response = endpoints.getProductById({id: 500});
+```
+
+Additional features:
+* keyword parameters substitution anywhere in the URL
+* additional parameters are put as request parameters (e.g. `getProducts({page:10})` -> `/products?page=10`)
+* passing request body (for POST/PUT calls) as second parameter
+* passing custom HTTP headers as optional third parameter
 
 ## Example spec with API setup
 ```javascript
